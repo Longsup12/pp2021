@@ -1,80 +1,89 @@
 students = []
 courses = []
-marks = []
+def Number_of_students():
+    return int(input('Enter number student now!:'))
 
-def Numberofstu():
-    Numberofstu = int(input("The number of students: \n"))
-    return Numberofstu 
+def In4_of_student():
+    return {
+        'id' : input('Student id : \n'),
+        'name' : input('Student name: \n'),
+        'dob' : input('Student DOB: \n')
+    }
 
-def InputstuInfo():
-    studentId = input("Student ID: \n")
-    studentName = input(" Student name: \n")
-    studentDoB = input("Student DoB: \n")
-    return {"id": studentId, "name": studentName, "Dob": studentDoB}
+def Number_of_course():
+     return int(input('Give me a course number: \n'))
 
-def NumberOfCours():
-    numberOfCours = int(input("The number of courses: \n"))
-    return numberOfCours 
+def Course_In4():
+    return {
+        'id' : input('Course name: \n'),
+        'name' : input('Course ID: \n')
+    }
 
-def CourseInfo():
-    coursId = input("Courses ID: \n")
-    coursName = input("Courses Name: \n")
-    return {"id": coursId, "name": coursName}
+def update_marks_of_course(course):
+    print(f"Mark of {course['name']}:")
+    course['marks'] = []
 
-def InputMark(course) :
-    marks.append({course: {}})
-    for i in range(len(students)):
-        mark = float(input("Student marks: \n"))
-        marks[len(marks) - 1][course].update({students[i]["name"]: mark})
+    for student in students:
+        course['marks'].append((student,
+            input(f"Mark of {student['name']}: ")))
 
-def showCoursesInfo(courses):
-    print("Courses Info: ")
-    for key, value in courses.items():
-        print(value)
+def Courses_list():
+    print ('We have:')
+    for course in courses:
+        print(f"- [{course['id']}] {course['name']}", end='')
+        print( '(marks available)' if 'marks' in course else '')
 
+def Student_list():
+    print('Student list:')
+    print(f'{"ID": ^10}{"Name":^15}{"DOB":^20}')
+    for student in students: 
+        print(f"{student['id']:^10}{student['dob']:^15}{student['name']:^20}")
+    print()
 
-def showStudentsInfo(students):
-    print("Student Info: ")
-    for i in range(len(students)):
-        print("Student Id " + "Student name " + "Student date of birth ")
-        for value in students[i].items():
-            print(value[1])
+def COursesmarks(course):
+    if 'marks' in course:
+        print(f"Marks of {course['name']}:")
 
+        print(f'{"NAME":^10}{"MARK":^5}')
+        for student, mark in course['marks']:
+            print(f"{student['name']:<20}{mark:>5}")
+    else:
+        print('NO marks')
 
-def showMarksInfo(marks, courseName, studentName):
-    for i in range(len(marks)):
-        for key, value in marks[i].items():
-            for keyy, valuee in value.items():
-                if (key == courseName and keyy == studentName):
-                    print(valuee)
+def select_course_prompt(intro_message):
+    Courses_list()
+    print(intro_message)
 
+    return input('Choose a course: ')
 
-if __name__ == "__main__":
+def search(List, keyword):
+    for item in List:
+        if keyword in item.values():
+            return item
 
-    numberOfStudents = Numberofstu()
-    print(numberOfStudents)
-    for i in range(numberOfStudents):
-        studentId, studentName, studentDob = InputstuInfo()
-        students.append({"id": studentId, "name": studentName, "dob": studentDob})
+    empty_item = List[0].copy()
+    empty_item.clear()
+    return empty_item
 
-    numberOfCourses = NumberOfCours()
-    for i in range(0, numberOfCourses):
-        coursId, coursName = CourseInfo()
-        courses[coursId] = coursName
-
-    y = input("continue press y, not continue press n")
-    while (y == "y"):
-        s = input("enter m for marks input other to cancel")
-        if (s == "m"):
-            coursId = input("Enter the courseId: ")
-            coursName = courses[coursId]
-            InputMark(students, coursName, marks)
-        else:
+def action_loop(msg=None, callback=None):
+    while True:
+        keyword = select_course_prompt(f'-> {msg}')
+        if not keyword:
+            print()
             break
+        callback(search(courses, keyword))
+        print()
 
-    print(marks)
-    showCoursesInfo(courses)
-    showStudentsInfo(students)
-    courseName = input("Enter the name of the course: ")
-    studentName = (input("Enter the name of the student: "))
-    showMarksInfo(marks, courseName, studentName)
+if __name__ == '__main__':
+
+    for _ in range(Number_of_students()):
+        students.append(In4_of_student())
+
+    for _ in range(Number_of_course()):
+        courses.append(Course_In4())
+
+    Student_list()
+    action_loop(msg='Marking courses...', callback=update_marks_of_course)
+    action_loop(msg='Select a course to show marks...', callback=COursesmarks)
+
+ 
